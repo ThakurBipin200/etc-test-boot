@@ -6,6 +6,8 @@
 <body>
 <h1>Create ETC Mappings</h1>
 <form th:action="@{/createMappings}" th:object="${etcMappingForm}" method="post">
+    <label for="SiteName">Site Name:</label>
+    <input type="text" id="SiteName" th:field="*{SiteName}" required>
     <label for="matchPattern">Match Pattern:</label>
     <input type="text" id="matchPattern" th:field="*{matchPattern}" required>
     <br>
