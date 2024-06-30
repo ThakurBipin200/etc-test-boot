@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create ETC Mappings</title>
+</head>
+<body>
+<h1>Create ETC Mappings</h1>
+<form th:action="@{/createMappings}" th:object="${etcMappingForm}" method="post">
+    <label for="matchPattern">Match Pattern:</label>
+    <input type="text" id="matchPattern" th:field="*{matchPattern}" required>
+    <br>
+    <label for="redirectPattern">Redirect Pattern:</label>
+    <input type="text" id="redirectPattern" th:field="*{redirectPattern}" required>
+    <br>
+    <button type="submit">Create Mappings</button>
+</form>
+
+<div th:if="${message}" th:text="${message}" style="color:green"></div>
+<div th:if="${error}" th:text="${error}" style="color:red"></div>
+</body>
+</html>
