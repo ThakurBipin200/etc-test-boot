@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Complex Form</title>
+    <script>
+        function addField() {
+            var container = document.getElementById("siteOtherLangsContainer");
+            var index = container.children.length; // Each field pair consists of one div element
+
+            var fieldDiv = document.createElement("div");
+            fieldDiv.setAttribute("id", "field-" + index);
+
+            var label1 = document.createElement("label");
+            label1.setAttribute("for", "siteOtherLang");
+            label1.innerText = "Site's Other Language Path";
+
+            var input1 = document.createElement("input");
+            input1.type = "text";
+            input1.name = "siteOtherLangs[" + index + "].siteOtherLang";
+            input1.required = true;
+
+            var label2 = document.createElement("label");
+            label2.setAttribute("for", "langCode");
+            label2.innerText = "Site's Other Language Code";
+
+            var select2 = document.createElement("select");
+            select2.name = "siteOtherLangs[" + index + "].langCode";
+            select2.required = true;
+
+            /* Assuming the list of language codes is available in a global variable 'languageCodes' */
+            languageCodes.forEach(function(code) {
+                var option = document.createElement("option");
+                option.value = code;
+                option.text = code;
+                select2.appendChild(option);
+            });
+
+            var removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.innerText = "Remove";
+            removeButton.onclick = function() {
+                removeField(fieldDiv.id);
+            };
+
+            fieldDiv.appendChild(label1);
+            fieldDiv.appendChild(input1);
+            fieldDiv.appendChild(label2);
+            fieldDiv.appendChild(select2);
+            fieldDiv.appendChild(removeButton);
+            container.appendChild(fieldDiv);
+        }
+
+        function removeField(id) {
+            var field = document.getElementById(id);
+            field.parentNode.removeChild(field);
+        }
+    </script>
+</head>
+<body>
+<script>
+    var languageCodes = /*[[${languageCodes}]]*/ [];
+</script>
+<form th:action="@{/submit}" th:object="${multiFieldForm}" method="post">
+    <div id="siteOtherLangsContainer">
+        <div th:each="siteOtherLang, stat : *{siteOtherLangs}" th:id="|'field-' + ${stat.index}|">
+            <label for="siteOtherLang">Site's Other Language Path</label>
+            <input type="text" th:field="*{siteOtherLangs[stat.index].siteOtherLang}" required>
+            <label for="langCode">Site's Other Language Code</label>
+            <select th:field="*{siteOtherLangs[stat.index].langCode}" required>
+                <option th:each="code : ${languageCodes}" th:value="${code}" th:text="${code}"></option>
+            </select>
+            <button type="button" onclick="removeField('field-[[${stat.index}]]')">Remove</button>
+        </div>
+        <div th:if="${#lists.isEmpty(multiFieldForm.siteOtherLangs)}" id="field-0">
+            <label for="siteOtherLang">Site's Other Language Path</label>
+            <input type="text" th:field="*{siteOtherLangs[0].siteOtherLang}" required>
+            <label for="langCode">Site's Other Language Code</label>
+            <select th:field="*{siteOtherLangs[0].langCode}" required>
+                <option th:each="code : ${languageCodes}" th:value="${code}" th:text="${code}"></option>
+            </select>
+            <button type="button" onclick="removeField('field-0')">Remove</button>
+        </div>
+    </div>
+
+    <button type="button" onclick="addField()">Add Field</button>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>
