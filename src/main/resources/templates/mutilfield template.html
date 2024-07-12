@@ -87,3 +87,99 @@
 </form>
 </body>
 </html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dispatcher Configuration Setup</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Dispatcher Configuration Setup</h2>
+        <div>
+            <p>All fields should be in lowercase</p>
+        </div>
+        <form action="#" th:action="@{/generate-config}" th:object="${siteConfig}" method="post" id="download-form">
+            <!-- Existing fields... -->
+
+            <!-- Language Configurations -->
+            <div id="siteOtherLanguageContainer">
+                <div class="dummyDiv" th:each="langConfig, iterStat : *{languageConfigs}">
+                    <div class="siteContainer">
+                        <label for="siteOtherLang">Site's Other Language Path <span th:text="${iterStat.index + 1}">1</span>*</label>
+                        <div class="tooltip" tabindex="0" title="A ZIP code helps us find plans in your area" aria-hidden="false" aria-describedby="TooltipDef">
+                            <img alt="" src="css/assets/tooltip.svg">
+                            <span id="TooltipDef" role="tooltip" class="tooltiptext hide" aria-label="A ZIP code helps us find plans in your area.">A ZIP code.</span>
+                        </div>
+                        <input type="text" th:field="*{languageConfigs[__${iterStat.index}__].siteOtherLang}" id="siteOtherLang" name="siteOtherLang" required>
+                    </div>
+                    <div class="siteContainer">
+                        <div class="tooltip" tabindex="0" title="A ZIP code helps us find plans in your area" aria-hidden="false" aria-describedby="TooltipDef">
+                            <label for="langCode">Site's Other Language Code <span th:text="${iterStat.index + 1}">1</span>*</label>
+                            <img alt="" src="css/assets/tooltip.svg">
+                            <span id="TooltipDef" role="tooltip" class="tooltiptext hide" aria-label="A ZIP code helps us find plans in your area.">A ZIP code.</span>
+                        </div>
+                        <select th:field="*{languageConfigs[__${iterStat.index}__].langCode}" id="langCode" name="langCode" required>
+                            <option value="en" class="langCodeOption">English</option>
+                            <option value="es" class="langCodeOption">Español</option>
+                            <option value="fr" class="langCodeOption">Français</option>
+                            <option value="de" class="langCodeOption">Deutsch</option>
+                            <option value="it" class="langCodeOption">Italiano</option>
+                            <option value="pt" class="langCodeOption">Português</option>
+                        </select>
+                    </div>
+                    <button type="button" th:if="${iterStat.index > 0}" onclick="removeLanguageConfig(this)">Remove</button>
+                </div>
+            </div>
+
+            <button type="button" onclick="addLanguageConfig()">Add Language Configuration</button>
+
+            <!-- Existing fields... -->
+
+            <button type="submit">Generate Config</button>
+        </form>
+    </div>
+
+    <script>
+        const languageCodes = ["en", "es", "fr", "de", "it", "pt"]; // Update with the same list of language codes
+        let options = languageCodes.map(code => `<option value="${code}">${code}</option>`).join('');
+
+        function addLanguageConfig() {
+            const container = document.getElementById('siteOtherLanguageContainer');
+            const index = container.children.length;
+            const newConfig = document.createElement('div');
+            newConfig.className = 'dummyDiv';
+
+            newConfig.innerHTML = `
+                <div class="siteContainer">
+                    <label for="siteOtherLang">Site's Other Language Path ${index + 1}*</label>
+                    <div class="tooltip" tabindex="0" title="A ZIP code helps us find plans in your area" aria-hidden="false" aria-describedby="TooltipDef">
+                        <img alt="" src="css/assets/tooltip.svg">
+                        <span id="TooltipDef" role="tooltip" class="tooltiptext hide" aria-label="A ZIP code helps us find plans in your area.">A ZIP code.</span>
+                    </div>
+                    <input type="text" name="languageConfigs[${index}].siteOtherLang" required>
+                </div>
+                <div class="siteContainer">
+                    <div class="tooltip" tabindex="0" title="A ZIP code helps us find plans in your area" aria-hidden="false" aria-describedby="TooltipDef">
+                        <label for="langCode">Site's Other Language Code ${index + 1}*</label>
+                        <img alt="" src="css/assets/tooltip.svg">
+                        <span id="TooltipDef" role="tooltip" class="tooltiptext hide" aria-label="A ZIP code helps us find plans in your area.">A ZIP code.</span>
+                    </div>
+                    <select name="languageConfigs[${index}].langCode" required>
+                        ${options}
+                    </select>
+                </div>
+                <button type="button" onclick="removeLanguageConfig(this)">Remove</button>
+            `;
+
+            container.appendChild(newConfig);
+        }
+
+        function removeLanguageConfig(button) {
+            const container = document.getElementById('siteOtherLanguageContainer');
+            container.removeChild(button.parentElement);
+        }
+    </script>
+</body>
+</html>
+
