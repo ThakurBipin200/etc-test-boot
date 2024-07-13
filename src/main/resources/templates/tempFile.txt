@@ -1,0 +1,130 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class LanguageForm {
+    private List<LanguageEntry> languages = new ArrayList<>();
+
+    // Getter and Setter
+    public List<LanguageEntry> getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(List<LanguageEntry> languages) {
+        this.languages = languages;
+    }
+
+    public static class LanguageEntry {
+        private String languagePath;
+        private String languageCode;
+
+        // Constructors
+        public LanguageEntry() {}
+
+        public LanguageEntry(String languagePath, String languageCode) {
+            this.languagePath = languagePath;
+            this.languageCode = languageCode;
+        }
+
+        // Getters and Setters
+        public String getLanguagePath() {
+            return languagePath;
+        }
+
+        public void setLanguagePath(String languagePath) {
+            this.languagePath = languagePath;
+        }
+
+        public String getLanguageCode() {
+            return languageCode;
+        }
+
+        public void setLanguageCode(String languageCode) {
+            this.languageCode = languageCode;
+        }
+    }
+}
+
+@Controller
+public class LanguageController {
+
+    @GetMapping("/selectLanguages")
+    public String selectLanguages(Model model) {
+        // Prepare an empty LanguageForm with a list of LanguageEntry objects
+        LanguageForm languageForm = new LanguageForm();
+        if (languageForm.getLanguages().isEmpty()) {
+            languageForm.getLanguages().add(new LanguageForm.LanguageEntry());
+        }
+        
+        model.addAttribute("languageForm", languageForm);
+        return "select_languages";
+    }
+
+    @PostMapping("/submitLanguages")
+    public String submitLanguages(@ModelAttribute LanguageForm languageForm, Model model) {
+        model.addAttribute("languageForm", languageForm);
+        return "result";
+    }
+}
+
+
+
+
+
+
+//html
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Select Languages Example</title>
+    <script>
+        function addLanguageField() {
+            const container = document.getElementById('languages-container');
+            const index = container.children.length;
+            const newField = `
+                <div id="language-entry-${index}">
+                    <label for="languages${index}.languagePath">Language Path:</label>
+                    <input type="text" th:field="*{languages[${index}].languagePath}" />
+                    <label for="languages${index}.languageCode">Language Code:</label>
+                    <select th:field="*{languages[${index}].languageCode}">
+                        <option th:value="en" th:text="'English'"></option>
+                        <option th:value="es" th:text="'Spanish'"></option>
+                        <option th:value="fr" th:text="'French'"></option>
+                    </select>
+                    <button type="button" onclick="removeLanguageField(${index})">Remove</button>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', newField);
+        }
+
+        function removeLanguageField(index) {
+            const entry = document.getElementById(`language-entry-${index}`);
+            const container = document.getElementById('languages-container');
+            entry.remove();
+            if (container.children.length === 0) {
+                addLanguageField();
+            }
+        }
+    </script>
+</head>
+<body>
+    <form th:action="@{/submitLanguages}" th:object="${languageForm}" method="post">
+        <div id="languages-container">
+            <div th:each="language, iterStat : ${languageForm.languages}" th:id="|'language-entry-' + ${iterStat.index}|">
+                <label for="|languages${iterStat.index}.languagePath|">Language Path:</label>
+                <input type="text" th:field="*{languages[${iterStat.index}].languagePath}" />
+                <label for="|languages${iterStat.index}.languageCode|">Language Code:</label>
+                <select th:field="*{languages[${iterStat.index}].languageCode}">
+                    <option th:value="en" th:text="'English'"></option>
+                    <option th:value="es" th:text="'Spanish'"></option>
+                    <option th:value="fr" th:text="'French'"></option>
+                </select>
+                <button type="button" th:onclick="|removeLanguageField(${iterStat.index})|">Remove</button>
+            </div>
+        </div>
+        <button type="button" onclick="addLanguageField()">Add Language</button>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
+
